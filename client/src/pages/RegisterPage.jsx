@@ -3,38 +3,23 @@ import { Link, useNavigate } from 'react-router-dom'
 import { register } from '../services/api'
 import { useAuthStore } from '../store/authStore'
 import toast from 'react-hot-toast'
+import { FiMail, FiLock, FiUser, FiArrowRight } from 'react-icons/fi'
 
 export default function RegisterPage() {
   const navigate = useNavigate()
   const { login: setAuth } = useAuthStore()
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: ''
-  })
+  const [form, setForm] = useState({ name:'', email:'', password:'', confirmPassword:'' })
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value })
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value })
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (form.password !== form.confirmPassword) {
-      toast.error('Passwords do not match')
-      return
-    }
-    if (form.password.length < 6) {
-      toast.error('Password must be at least 6 characters')
-      return
-    }
+    if (form.password !== form.confirmPassword) return toast.error('Passwords do not match')
+    if (form.password.length < 6) return toast.error('Password must be at least 6 characters')
     setLoading(true)
     try {
-      const res = await register({
-        name: form.name,
-        email: form.email,
-        password: form.password
-      })
+      const res = await register({ name: form.name, email: form.email, password: form.password })
       setAuth(res.data.user, res.data.token)
       toast.success('Account created!')
       navigate('/')
@@ -45,109 +30,61 @@ export default function RegisterPage() {
     }
   }
 
+  const fields = [
+    { name: 'name',            label: 'Full name',        type: 'text',     icon: FiUser, placeholder: 'Your name'              },
+    { name: 'email',           label: 'Email address',    type: 'email',    icon: FiMail, placeholder: 'you@example.com'         },
+    { name: 'password',        label: 'Password',         type: 'password', icon: FiLock, placeholder: 'At least 6 characters'   },
+    { name: 'confirmPassword', label: 'Confirm password', type: 'password', icon: FiLock, placeholder: '••••••••'                },
+  ]
+
   return (
     <div className="min-h-screen flex items-center justify-center px-6 py-12"
-      style={{ background: '#f0efff' }}>
+      style={{ background: '#F0FDF9' }}>
       <div className="w-full max-w-md">
-
-        <div className="mb-10">
-          <Link to="/" className="text-2xl font-black" style={{ color: '#6C63FF' }}>
-            CityFix.
-          </Link>
-          <h1 className="text-4xl font-black text-gray-900 mt-6 mb-2">
-            Create Account
-          </h1>
-          <p className="text-gray-400 text-base">
-            Join thousands reporting issues around you
-          </p>
+        <div className="text-center mb-8">
+          <Link to="/" className="text-3xl font-black" style={{ color: '#0D9488' }}>CityFix.</Link>
+          <h1 className="text-4xl font-black text-gray-900 mt-6 mb-2">Create account</h1>
+          <p className="text-gray-400">Join thousands fixing their cities</p>
         </div>
 
-        <div className="bg-white rounded-3xl p-8 shadow-sm">
+        <div className="bg-white rounded-3xl p-8"
+          style={{ boxShadow: '0 8px 40px rgba(13,148,136,0.10)' }}>
           <form onSubmit={handleSubmit} className="space-y-5">
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Full name
-              </label>
-              <input
-                type="text"
-                name="name"
-                value={form.name}
-                onChange={handleChange}
-                required
-                placeholder="Your name"
-                className="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-100 text-sm focus:outline-none focus:border-purple-400 transition bg-gray-50"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Email address
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={form.email}
-                onChange={handleChange}
-                required
-                placeholder="you@example.com"
-                className="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-100 text-sm focus:outline-none focus:border-purple-400 transition bg-gray-50"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                value={form.password}
-                onChange={handleChange}
-                required
-                placeholder="At least 6 characters"
-                className="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-100 text-sm focus:outline-none focus:border-purple-400 transition bg-gray-50"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Confirm password
-              </label>
-              <input
-                type="password"
-                name="confirmPassword"
-                value={form.confirmPassword}
-                onChange={handleChange}
-                required
-                placeholder="••••••••"
-                className="w-full px-4 py-3.5 rounded-2xl border-2 border-gray-100 text-sm focus:outline-none focus:border-purple-400 transition bg-gray-50"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-4 rounded-2xl text-white font-bold text-base transition disabled:opacity-50"
-              style={{ background: loading ? '#a89ef5' : '#6C63FF' }}
-            >
-              {loading ? 'Creating account...' : 'Create account'}
+            {fields.map(({ name, label, type, icon: Icon, placeholder }) => (
+              <div key={name}>
+                <label className="block text-sm font-bold text-gray-700 mb-2">{label}</label>
+                <div className="relative">
+                  <Icon className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={17}/>
+                  <input type={type} name={name} value={form[name]}
+                    onChange={handleChange} required placeholder={placeholder}
+                    className="w-full pl-11 pr-4 py-3.5 rounded-2xl text-sm focus:outline-none transition"
+                    style={{ background: '#F0FDF9', border: '2px solid #CCFBF1' }}
+                    onFocus={e => e.target.style.borderColor = '#0D9488'}
+                    onBlur={e => e.target.style.borderColor = '#CCFBF1'}
+                  />
+                </div>
+              </div>
+            ))}
+            <button type="submit" disabled={loading}
+              className="w-full py-4 rounded-2xl text-white font-bold text-base flex items-center justify-center gap-2 disabled:opacity-50"
+              style={{ background: '#0D9488' }}>
+              {loading ? 'Creating...' : <> Create account <FiArrowRight size={17}/> </>}
             </button>
-
           </form>
+
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-px" style={{ background: '#CCFBF1' }}/>
+            <span className="text-xs text-gray-400 font-medium">or</span>
+            <div className="flex-1 h-px" style={{ background: '#CCFBF1' }}/>
+          </div>
+
+          <div className="rounded-2xl p-4 text-center" style={{ background: '#F0FDF9' }}>
+            <p className="text-sm text-gray-500">
+              Already have an account?{' '}
+              <Link to="/login" className="font-bold" style={{ color: '#0D9488' }}>Sign in</Link>
+            </p>
+          </div>
         </div>
-
-        <p className="text-center text-sm text-gray-400 mt-6">
-          Already have an account?{' '}
-          <Link
-            to="/login"
-            className="font-bold"
-            style={{ color: '#6C63FF' }}
-          >
-            Sign in
-          </Link>
-        </p>
-
       </div>
     </div>
   )
