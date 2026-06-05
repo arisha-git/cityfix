@@ -229,19 +229,15 @@ export default function HomePage() {
 
           {/* Text */}
           <div className="flex-1 animate-fade-up">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-8"
-              style={{ background: '#CCFBF1', color: '#0D9488' }}>
-              <FiZap size={14}/>
-              Civic reporting made simple
-            </div>
+            
             <h1 className="text-6xl font-black text-gray-900 leading-none mb-6">
-              Spotted a<br/>
+              Spot a<br/>
               <span style={{ color: '#0D9488' }}>problem?</span><br/>
               Report it.
             </h1>
             <p className="text-xl text-gray-400 leading-relaxed mb-10 max-w-lg">
               CityFix connects citizens directly to the departments
-              responsible for fixing it — and tracks every response publicly.
+              responsible for fixing it  and tracks every response publicly.
             </p>
             <div className="flex items-center gap-4 flex-wrap">
               <Link to="/report"
@@ -264,29 +260,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Stats ── */}
-      <section ref={statsRef} style={{ background: '#0D9488' }}>
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { icon: FiAlertCircle, num: '2,400+', label: 'Issues Reported',   delay: 'delay-100' },
-              { icon: FiCheckCircle, num: '89%',    label: 'Resolution Rate',   delay: 'delay-200' },
-              { icon: FiUsers,       num: '12k+',   label: 'Active Citizens',   delay: 'delay-300' },
-              { icon: FiTrendingUp,  num: '48h',    label: 'Avg Response Time', delay: 'delay-400' },
-            ].map(({ icon: Icon, num, label, delay }) => (
-              <div key={label}
-                className={`text-center ${statsInView ? `animate-fade-up ${delay}` : 'opacity-0'}`}>
-                <div className="w-10 h-10 rounded-xl flex items-center justify-center mx-auto mb-3"
-                  style={{ background: 'rgba(255,255,255,0.15)' }}>
-                  <Icon size={20} color="white"/>
-                </div>
-                <p className="text-white text-3xl font-black">{num}</p>
-                <p className="text-teal-200 text-sm mt-1">{label}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+  
 
       {/* ── How it works ── */}
       <section ref={howRef} className="max-w-7xl mx-auto px-6 py-24">
@@ -296,10 +270,10 @@ export default function HomePage() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[
-            { num: '01', emoji: '👀', title: 'Spot the issue',    desc: 'See a pothole, broken light, or waste problem in your area.' },
-            { num: '02', emoji: '📸', title: 'Take a photo',      desc: 'Capture it on your phone and drop a pin on the map.'         },
-            { num: '03', emoji: '📤', title: 'Submit to CityFix', desc: 'We route it to the right government department instantly.'    },
-            { num: '04', emoji: '✅', title: 'Track & resolve',   desc: 'Follow the progress publicly until the issue is fixed.'      },
+            { num: '01', title: 'Spot the issue',    desc: 'See a pothole, broken light, or waste problem in your area.' },
+            { num: '02', title: 'Take a photo',      desc: 'Capture it on your phone and drop a pin on the map.'         },
+            { num: '03', title: 'Submit to CityFix', desc: 'We route it to the right government department instantly.'    },
+            { num: '04', title: 'Track & resolve',   desc: 'Follow the progress publicly until the issue is fixed.'      },
           ].map((step, i) => (
             <div key={i}
               className={`bg-white rounded-2xl p-6 ${howInView ? `animate-fade-up delay-${(i+1)*100}` : 'opacity-0'}`}
@@ -322,9 +296,9 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[
-              { emoji: '⚡', title: 'Simple reporting',         desc: 'Report any issue in under 60 seconds. No forms, no queues.',               bg: '#F0FDF9', delay: 'delay-100' },
-              { emoji: '🛡️', title: 'Government accountability', desc: 'Issues are public. Departments are held accountable for every report.',     bg: '#fff0f0', delay: 'delay-200' },
-              { emoji: '👥', title: 'Community driven',          desc: 'Upvote issues that matter. The more votes, the faster the response.',       bg: '#f0fff4', delay: 'delay-300' },
+              { title: 'Simple reporting',         desc: 'Report any issue in under 60 seconds. No forms, no queues.',               bg: '#F0FDF9', delay: 'delay-100' },
+              { title: 'Government accountability', desc: 'Issues are public. Departments are held accountable for every report.',     bg: '#fff0f0', delay: 'delay-200' },
+              { title: 'Community driven',          desc: 'Upvote issues that matter. The more votes, the faster the response.',       bg: '#f0fff4', delay: 'delay-300' },
             ].map(({ emoji, title, desc, bg, delay }) => (
               <div key={title}
                 className={`rounded-2xl p-8 ${whyInView ? `animate-fade-up ${delay}` : 'opacity-0'}`}
@@ -373,7 +347,7 @@ export default function HomePage() {
             style={{ background: 'white', transform: 'translate(-30%, 30%)' }}/>
           <div className="relative z-10">
             <div className="text-5xl mb-4 animate-bounce-slow">🏙️</div>
-            <h2 className="text-4xl font-black text-white mb-3">See something broken?</h2>
+            <h2 className="text-4xl font-black text-white mb-3">See something that needs fixing?</h2>
             <p className="text-teal-100 text-lg mb-8 max-w-md mx-auto">
               Don't scroll past it. Report it in 60 seconds and make your city better.
             </p>

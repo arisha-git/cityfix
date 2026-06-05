@@ -105,19 +105,7 @@ export default function LoginPage() {
             Report issues, track progress, make change.
           </p>
         </div>
-        <div className="relative z-10 flex gap-4 mt-8">
-          {[
-            { num: '2.4k+', label: 'Issues Reported' },
-            { num: '89%',   label: 'Resolved'        },
-            { num: '12',    label: 'Cities'          },
-          ].map(s => (
-            <div key={s.label} className="rounded-2xl p-4 flex-1"
-              style={{ background: 'rgba(255,255,255,0.12)' }}>
-              <p className="text-white text-xl font-black">{s.num}</p>
-              <p className="text-teal-200 text-xs mt-1">{s.label}</p>
-            </div>
-          ))}
-        </div>
+        
       </div>
 
       {/* Right form */}
