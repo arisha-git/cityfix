@@ -16,10 +16,10 @@ const IssueSchema = new mongoose.Schema({
   },
   photos: [{ type: String }],
   status: {
-    type: String,
-    enum: ['open', 'in-progress', 'resolved'],
-    default: 'open'
-  },
+  type: String,
+  enum: ['open', 'in-progress', 'resolved', 'closed'],
+  default: 'open'
+},
   upvotes:    [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   reportedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   assignedTo: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
