@@ -18,10 +18,16 @@ const statusColors = {
   open:          { bg: '#fff0f0', color: '#e53e3e' },
   'in-progress': { bg: '#fffbeb', color: '#d97706' },
   resolved:      { bg: '#f0fff4', color: '#38a169' },
+  closed:        { bg: '#F0FDF9', color: '#0D9488' },
 }
 
-const statusSteps  = ['open', 'in-progress', 'resolved']
-const statusLabels = { open: 'Reported', 'in-progress': 'In Progress', resolved: 'Resolved' }
+const statusSteps  = ['open', 'in-progress', 'resolved', 'closed']
+const statusLabels = {
+  open:          'Reported',
+  'in-progress': 'In Progress',
+  resolved:      'Resolved',
+  closed:        'Closed',
+}
 
 export default function IssueDetailPage() {
   const { id } = useParams()

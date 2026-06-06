@@ -60,15 +60,29 @@ export default function Navbar() {
           <div className="hidden md:flex items-center gap-3">
             {user ? (
               <>
-                <Link to="/dashboard"
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
-                  style={{
-                    background: isActive('/dashboard') ? '#F0FDF9' : 'transparent',
-                    color: isActive('/dashboard') ? '#0D9488' : '#6b7280',
-                  }}>
-                  <FiUser size={15} />
-                  {user.name.split(' ')[0]}
-                </Link>
+                <Link
+  to={
+    user.role === 'official' ? '/official' :
+    user.role === 'admin'    ? '/admin'    :
+    '/dashboard'
+  }
+  className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all"
+  style={{
+    background: (
+      isActive('/dashboard') ||
+      isActive('/official')  ||
+      isActive('/admin')
+    ) ? '#F0FDF9' : 'transparent',
+    color: (
+      isActive('/dashboard') ||
+      isActive('/official')  ||
+      isActive('/admin')
+    ) ? '#0D9488' : '#6b7280',
+  }}
+>
+  <FiUser size={15} />
+  {user.name.split(' ')[0]}
+</Link>
                 <Link to="/report"
                   className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white"
                   style={{ background: '#0D9488' }}>

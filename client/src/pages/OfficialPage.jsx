@@ -12,6 +12,7 @@ const statusColors = {
   open:          { bg: '#fff0f0', color: '#e53e3e' },
   'in-progress': { bg: '#fffbeb', color: '#d97706' },
   resolved:      { bg: '#f0fff4', color: '#38a169' },
+  closed:        { bg: '#F0FDF9', color: '#0D9488' },
 }
 
 const categoryColors = {
@@ -23,8 +24,13 @@ const categoryColors = {
   other:       { bg: '#F0FDF9', color: '#0D9488' },
 }
 
-const statusSteps  = ['open', 'in-progress', 'resolved']
-const statusLabels = { open: 'Open', 'in-progress': 'In Progress', resolved: 'Resolved' }
+const statusSteps  = ['open', 'in-progress', 'resolved', 'closed']
+const statusLabels = {
+  open:          'Reported',
+  'in-progress': 'In Progress',
+  resolved:      'Resolved',
+  closed:        'Closed',
+}
 
 export default function OfficialPage() {
   const { user } = useAuthStore()
@@ -35,14 +41,7 @@ export default function OfficialPage() {
 
   useEffect(() => {
     getIssues()
-      .then(res => {
-        const mine = res.data.filter(i =>
-          i.sector === user?.sector ||
-          i.assignedTo === user?.id ||
-          i.assignedTo?._id === user?.id
-        )
-        setIssues(mine)
-      })
+      .then(res => setIssues(res.data))
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
@@ -52,7 +51,7 @@ export default function OfficialPage() {
     try {
       const res = await updateStatus(issueId, newStatus)
       setIssues(issues.map(i => i._id === issueId ? res.data : i))
-      toast.success(`Status updated to ${statusLabels[newStatus]}`)
+      toast.success(`Marked as ${statusLabels[newStatus]}`)
     } catch {
       toast.error('Failed to update status')
     } finally {
@@ -75,23 +74,27 @@ export default function OfficialPage() {
 
         {/* Header */}
         <div className="mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-4"
-            style={{ background: '#CCFBF1', color: '#0D9488' }}>
+          <div
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold mb-4"
+            style={{ background: '#CCFBF1', color: '#0D9488' }}
+          >
             🏛️ Official Panel
           </div>
           <h1 className="text-4xl font-black text-gray-900 mb-1">
             Hey, {user?.name?.split(' ')[0]} 👋
           </h1>
-          <p className="text-gray-400">Manage and update issues assigned to your department</p>
+          <p className="text-gray-400">
+            Review all reported issues and update their progress
+          </p>
         </div>
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
           {[
-            { label: 'Total assigned', value: stats.total,      color: '#0D9488' },
-            { label: 'Open',           value: stats.open,       color: '#e53e3e' },
-            { label: 'In progress',    value: stats.inProgress, color: '#d97706' },
-            { label: 'Resolved',       value: stats.resolved,   color: '#38a169' },
+            { label: 'Total issues', value: stats.total,      color: '#0D9488' },
+            { label: 'Open',         value: stats.open,       color: '#e53e3e' },
+            { label: 'In progress',  value: stats.inProgress, color: '#d97706' },
+            { label: 'Resolved',     value: stats.resolved,   color: '#38a169' },
           ].map(({ label, value, color }) => (
             <div key={label} className="bg-white rounded-2xl p-5"
               style={{ border: '1px solid #CCFBF1' }}>
@@ -110,15 +113,17 @@ export default function OfficialPage() {
             style={{ color: '#9ca3af' }}>
             <FiFilter size={14}/> Filter by status:
           </div>
-          {['', 'open', 'in-progress', 'resolved'].map(s => (
-            <button key={s}
+          {['', 'open', 'in-progress', 'resolved', 'closed'].map(s => (
+            <button
+              key={s}
               onClick={() => setFilter(s)}
               className="px-4 py-2 rounded-full text-sm font-bold transition-all"
               style={{
                 background: filter === s ? '#0D9488' : '#F0FDF9',
                 color: filter === s ? 'white' : '#6b7280',
                 border: '1px solid #CCFBF1',
-              }}>
+              }}
+            >
               {s === '' ? 'All' : statusLabels[s]}
             </button>
           ))}
@@ -129,7 +134,7 @@ export default function OfficialPage() {
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="bg-white rounded-2xl p-6 animate-pulse"
-                style={{ border: '1px solid #CCFBF1', height: '120px' }}/>
+                style={{ border: '1px solid #CCFBF1', height: '200px' }}/>
             ))}
           </div>
         ) : filtered.length === 0 ? (
@@ -137,7 +142,7 @@ export default function OfficialPage() {
             style={{ border: '1px solid #CCFBF1' }}>
             <div className="text-5xl mb-4">🎉</div>
             <h3 className="text-xl font-black text-gray-900 mb-2">All clear!</h3>
-            <p className="text-gray-400">No issues found for the selected filter</p>
+            <p className="text-gray-400">No issues found for this filter</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -160,14 +165,12 @@ export default function OfficialPage() {
                         </span>
                         <span className="text-xs font-bold px-3 py-1 rounded-full capitalize"
                           style={{ background: sta.bg, color: sta.color }}>
-                          {issue.status}
+                          {issue.status === 'closed' ? 'Closed' : issue.status}
                         </span>
                       </div>
                       <h3 className="font-black text-gray-900 text-lg mb-1">{issue.title}</h3>
                       <p className="text-sm text-gray-400 line-clamp-2">{issue.description}</p>
                     </div>
-
-                    {/* Thumbnail */}
                     {issue.photos?.[0] && (
                       <img src={issue.photos[0]} alt=""
                         className="w-20 h-20 rounded-xl object-cover flex-shrink-0"
@@ -191,31 +194,40 @@ export default function OfficialPage() {
                     <div className="flex items-center gap-1">
                       <FiArrowUp size={12}/>{issue.upvotes?.length || 0} upvotes
                     </div>
+                    {issue.reportedBy?.name && (
+                      <div className="flex items-center gap-1">
+                        👤 Reported by {issue.reportedBy.name}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Mini status timeline */}
-                  <div className="flex items-center mb-5">
+                  {/* Status timeline */}
+                  <div className="flex items-center mb-6 px-2">
                     {statusSteps.map((step, i) => {
                       const done   = i <= currentStep
                       const active = i === currentStep
                       return (
                         <div key={step} className="flex items-center flex-1">
                           <div className="flex flex-col items-center">
-                            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-black"
+                            <div
+                              className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-black transition-all"
                               style={{
                                 background: done ? '#0D9488' : '#F0FDF9',
                                 color: done ? 'white' : '#9ca3af',
                                 border: active ? '2px solid #0D9488' : '2px solid #CCFBF1',
-                              }}>
+                              }}
+                            >
                               {done && !active ? <FiCheckCircle size={14}/> : i + 1}
                             </div>
-                            <span className="text-xs font-bold mt-1"
-                              style={{ color: done ? '#0D9488' : '#9ca3af' }}>
+                            <span
+                              className="text-xs font-bold mt-1 text-center"
+                              style={{ color: done ? '#0D9488' : '#9ca3af', fontSize: '10px' }}
+                            >
                               {statusLabels[step]}
                             </span>
                           </div>
                           {i < statusSteps.length - 1 && (
-                            <div className="flex-1 h-1 mx-2 rounded-full"
+                            <div className="flex-1 h-1 mx-1 rounded-full"
                               style={{ background: i < currentStep ? '#0D9488' : '#CCFBF1' }}/>
                           )}
                         </div>
@@ -223,30 +235,92 @@ export default function OfficialPage() {
                     })}
                   </div>
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-3 flex-wrap">
-                    {statusSteps
-                      .filter(s => s !== issue.status)
-                      .map(s => (
-                        <button key={s}
-                          onClick={() => handleStatusChange(issue._id, s)}
-                          disabled={updating === issue._id}
-                          className="px-4 py-2.5 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
-                          style={{
-                            background: statusColors[s].bg,
-                            color: statusColors[s].color,
-                            border: `1px solid ${statusColors[s].color}30`,
-                          }}>
-                          {updating === issue._id ? 'Updating...' : `Mark as ${statusLabels[s]}`}
-                        </button>
-                      ))}
-                    <Link to={`/issues/${issue._id}`}
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-3 flex-wrap pt-4"
+                    style={{ borderTop: '1px solid #CCFBF1' }}>
+
+                    {issue.status === 'open' && (
+                      <button
+                        onClick={() => handleStatusChange(issue._id, 'in-progress')}
+                        disabled={updating === issue._id}
+                        className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+                        style={{
+                          background: '#fffbeb',
+                          color: '#d97706',
+                          border: '2px solid #fcd34d',
+                        }}
+                      >
+                        {updating === issue._id ? 'Updating...' : '🔧 Start working on this'}
+                      </button>
+                    )}
+
+                    {issue.status === 'in-progress' && (
+                      <button
+                        onClick={() => handleStatusChange(issue._id, 'resolved')}
+                        disabled={updating === issue._id}
+                        className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+                        style={{
+                          background: '#f0fff4',
+                          color: '#38a169',
+                          border: '2px solid #86efac',
+                        }}
+                      >
+                        {updating === issue._id ? 'Updating...' : '✅ Mark as resolved'}
+                      </button>
+                    )}
+
+                    {issue.status === 'resolved' && (
+                      <button
+                        onClick={() => handleStatusChange(issue._id, 'closed')}
+                        disabled={updating === issue._id}
+                        className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+                        style={{
+                          background: '#F0FDF9',
+                          color: '#0D9488',
+                          border: '2px solid #5eead4',
+                        }}
+                      >
+                        {updating === issue._id ? 'Updating...' : '🔒 Close this issue'}
+                      </button>
+                    )}
+
+                    {issue.status === 'closed' && (
+                      <div
+                        className="flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold"
+                        style={{ background: '#F0FDF9', color: '#0D9488' }}
+                      >
+                        🎉 Issue closed
+                      </div>
+                    )}
+
+                    {/* Also allow going back a step */}
+                    {issue.status !== 'open' && issue.status !== 'closed' && (
+                      <button
+                        onClick={() => {
+                          const prev = statusSteps[statusSteps.indexOf(issue.status) - 1]
+                          handleStatusChange(issue._id, prev)
+                        }}
+                        disabled={updating === issue._id}
+                        className="px-4 py-3 rounded-xl text-xs font-bold transition-all disabled:opacity-50"
+                        style={{
+                          background: 'white',
+                          color: '#9ca3af',
+                          border: '1px solid #CCFBF1',
+                        }}
+                      >
+                        ← Undo
+                      </button>
+                    )}
+
+                    <Link
+                      to={`/issues/${issue._id}`}
                       className="ml-auto flex items-center gap-1 text-sm font-bold"
-                      style={{ color: '#0D9488' }}>
+                      style={{ color: '#0D9488' }}
+                    >
                       View full issue <FiArrowRight size={14}/>
                     </Link>
-                  </div>
 
+                  </div>
                 </div>
               )
             })}
