@@ -56,9 +56,6 @@ CityFix was developed to encourage civic participation and improve accountabilit
 - Analytics and reporting dashboard
 - Geographic heatmaps for issue tracking
 
-## Project Showcase
-
-Developed as part of the SCSET Project Showcase at Bennett University.
 
 ---
 
@@ -67,5 +64,3 @@ Developed as part of the SCSET Project Showcase at Bennett University.
 https://cityfix-ari.vercel.app/
 
 ---
-
-**Fixing cities, one report at a time.**
